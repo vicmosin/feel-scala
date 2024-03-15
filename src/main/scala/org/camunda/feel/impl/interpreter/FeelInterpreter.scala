@@ -16,6 +16,7 @@
  */
 package org.camunda.feel.impl.interpreter
 
+import org.camunda.feel.Decorator
 import org.camunda.feel.FeelEngine.UnaryTests
 import org.camunda.feel.api.EvaluationFailureType
 import org.camunda.feel.context.Context
@@ -37,9 +38,18 @@ import java.time.{Duration, Period}
 /** @author
   *   Philipp Ossler
   */
-class FeelInterpreter {
+class FeelInterpreter(val decorator: Option[Decorator] = Option.empty) {
 
   def eval(expression: Exp)(implicit context: EvalContext): Val =
+    decorator
+      .map(_.decorate { exp =>
+        doEval(exp)(context)
+      }(expression))
+      .getOrElse {
+        doEval(expression)(context)
+      }
+
+  private def doEval(expression: Exp)(implicit context: EvalContext): Val =
     expression match {
 
       // literals

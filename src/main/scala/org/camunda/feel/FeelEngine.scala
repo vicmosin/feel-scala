@@ -17,6 +17,7 @@
 package org.camunda.feel
 
 import fastparse.Parsed
+import org.camunda.feel.Decorator
 import org.camunda.feel.FeelEngine.{
   Configuration,
   EvalExpressionResult,
@@ -116,10 +117,11 @@ class FeelEngine(
     val functionProvider: FunctionProvider = FeelEngine.defaultFunctionProvider,
     val valueMapper: ValueMapper = FeelEngine.defaultValueMapper,
     val configuration: Configuration = FeelEngine.defaultConfiguration,
-    val clock: FeelEngineClock = FeelEngine.defaultClock
+    val clock: FeelEngineClock = FeelEngine.defaultClock,
+    val decorator: Option[Decorator] = Option.empty
 ) {
 
-  private val interpreter = new FeelInterpreter()
+  private val interpreter = new FeelInterpreter(decorator)
 
   private val validator = new ExpressionValidator(
     externalFunctionsEnabled = configuration.externalFunctionsEnabled
@@ -130,6 +132,7 @@ class FeelEngine(
       s"value-mapper: $valueMapper, " +
       s"function-provider: $functionProvider, " +
       s"clock: $clock, " +
+      s"decorator: $decorator, " +
       s"configuration: $configuration]"
   )
 

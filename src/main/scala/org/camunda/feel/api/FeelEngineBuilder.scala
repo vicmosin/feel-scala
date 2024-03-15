@@ -16,7 +16,7 @@
  */
 package org.camunda.feel.api
 
-import org.camunda.feel.{FeelEngine, FeelEngineClock}
+import org.camunda.feel.{FeelEngine, FeelEngineClock, Decorator}
 import org.camunda.feel.FeelEngine.{Configuration, defaultFunctionProvider}
 import org.camunda.feel.context.FunctionProvider
 import org.camunda.feel.valuemapper.{CustomValueMapper, ValueMapper}
@@ -29,7 +29,8 @@ case class FeelEngineBuilder private (
     valueMapper: ValueMapper = FeelEngine.defaultValueMapper,
     customValueMappers: List[CustomValueMapper] = List.empty,
     clock: FeelEngineClock = FeelEngine.defaultClock,
-    configuration: Configuration = FeelEngine.defaultConfiguration
+    configuration: Configuration = FeelEngine.defaultConfiguration,
+    decorator: Option[Decorator] = Option.empty
 ) {
 
   /** Sets the given [[FunctionProvider]] for the engine.
@@ -59,6 +60,11 @@ case class FeelEngineBuilder private (
   def withEnabledExternalFunctions(enabled: Boolean): FeelEngineBuilder =
     copy(configuration = configuration.copy(externalFunctionsEnabled = enabled))
 
+  /** Defines the isntance of [[Decorator]] to be used while evaluating the expression.
+    */
+  def withDecorator(decorator: Decorator): FeelEngineBuilder =
+    copy(decorator = Option.apply(decorator))
+
   /** Creates a new engine with the given configuration.
     *
     * @return
@@ -69,7 +75,8 @@ case class FeelEngineBuilder private (
       functionProvider = functionProvider,
       valueMapper = valueMapper,
       configuration = configuration,
-      clock = clock
+      clock = clock,
+      decorator = decorator
     )
   )
 
